@@ -1,1 +1,3 @@
 rootProject.name = 'spring-plus-angular'
+
+include("applications/server")
