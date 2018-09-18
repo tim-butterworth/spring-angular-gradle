@@ -1,2 +1,7 @@
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
+
+task copyJSToServer(type:Copy) {
+    from 'applications/angular-app/dist'
+    into 'applications/server/src/main/resources/public'
+}

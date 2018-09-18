@@ -1,0 +1,17 @@
+group = 'com.example-client'
+version = '0.0.1-SNAPSHOT'
+
+task installJs(type: Exec) {
+  commandLine('yarn', 'install')
+}
+
+task buildJs(type: Exec) {
+  commandLine('yarn', 'run', 'ng', 'build')
+}
+
+task testJs(type: Exec) {
+  commandLine('yarn', 'run', 'ng', 'test')
+}
+
+buildJs.dependsOn(installJs)
+testJs.dependsOn(installJs)

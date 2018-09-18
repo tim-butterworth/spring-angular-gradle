@@ -24,3 +24,8 @@
 /dist/
 /nbdist/
 /.nb-gradle/
+
+### Generated Resources ###
+**/public/**
+**/build/**
+**/out/**
