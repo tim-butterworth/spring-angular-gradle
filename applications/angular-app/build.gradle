@@ -10,7 +10,11 @@ task buildJs(type: Exec) {
 }
 
 task testJs(type: Exec) {
-  commandLine('yarn', 'run', 'ng', 'test')
+  commandLine('yarn', 'run', 'test', '--single-run')
+}
+
+task cleanJs(type: Exec) {
+  commandLine('rm', '-rf', 'dist')
 }
 
 buildJs.dependsOn(installJs)

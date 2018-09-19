@@ -1,7 +1,34 @@
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
-task copyJSToServer(type:Copy) {
+task copyJsToServer(type: Copy) {
     from 'applications/angular-app/dist'
     into 'applications/server/src/main/resources/public'
 }
+
+task test {}
+
+task clean(type: Exec) {
+    workingDir("applications/server/src/main/resources")
+
+    commandLine('rm', '-rf', 'public')
+}
+
+def clientTest = project.getTasks().getByPath(":applications/angular-app:testJs")
+def clientBuild = project.getTasks().getByPath(":applications/angular-app:buildJs")
+def clientClean = project.getTasks().getByPath(":applications/angular-app:cleanJs")
+
+def serverBuild = project.getTasks().getByPath(":applications/server:build")
+def serverTest = project.getTasks().getByPath(":applications/server:test")
+def serverClean = project.getTasks().getByPath(":applications/server:clean")
+
+def bootRun = project.getTasks().getByPath(":applications/server:bootRun")
+
+copyJsToServer.dependsOn(clientBuild)
+clientBuild.dependsOn(clientTest)
+serverBuild.dependsOn(copyJsToServer)
+
+clean.dependsOn(clientClean, serverClean)
+test.dependsOn(clientTest, serverTest)
+
+bootRun.dependsOn((Task) copyJsToServer)
