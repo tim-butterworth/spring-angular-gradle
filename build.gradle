@@ -1,19 +1,6 @@
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
-task copyJsToServer(type: Copy) {
-    from 'applications/angular-app/dist'
-    into 'applications/server/src/main/resources/public'
-}
-
-task test {}
-
-task clean(type: Exec) {
-    workingDir("applications/server/src/main/resources")
-
-    commandLine('rm', '-rf', 'public')
-}
-
 def clientTest = project.getTasks().getByPath(":applications/angular-app:testJs")
 def clientBuild = project.getTasks().getByPath(":applications/angular-app:buildJs")
 def clientClean = project.getTasks().getByPath(":applications/angular-app:cleanJs")
@@ -24,11 +11,47 @@ def serverClean = project.getTasks().getByPath(":applications/server:clean")
 
 def bootRun = project.getTasks().getByPath(":applications/server:bootRun")
 
-copyJsToServer.dependsOn(clientBuild)
-clientBuild.dependsOn(clientTest)
-serverBuild.dependsOn(copyJsToServer)
+task copyJsToServer(type: Copy) {
+    from 'applications/angular-app/dist'
+    into 'applications/server/src/main/resources/public'
+}
 
-clean.dependsOn(clientClean, serverClean)
-test.dependsOn(clientTest, serverTest)
+task clean(type: Exec) {
+    workingDir("applications/server/src/main/resources")
 
-bootRun.dependsOn((Task) copyJsToServer)
+    commandLine('rm', '-rf', 'public')
+}
+
+task buildAll {
+    dependsOn clientTest
+    dependsOn clientBuild
+    dependsOn copyJsToServer
+    dependsOn serverBuild
+
+    serverBuild.mustRunAfter(copyJsToServer)
+    copyJsToServer.mustRunAfter(clientBuild)
+    clientBuild.mustRunAfter(clientTest)
+}
+
+task buildAndRunServer {
+    dependsOn clientTest
+    dependsOn clientBuild
+    dependsOn copyJsToServer
+    dependsOn bootRun
+
+    bootRun.mustRunAfter(copyJsToServer)
+    copyJsToServer.mustRunAfter(clientBuild)
+    clientBuild.mustRunAfter(clientTest)
+}
+
+task testAll {
+    dependsOn clientTest
+    dependsOn serverTest
+
+    serverTest.mustRunAfter(clientTest)
+}
+
+task cleanAll {
+    dependsOn clientClean
+    dependsOn serverClean
+}

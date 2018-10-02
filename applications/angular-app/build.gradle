@@ -9,6 +9,10 @@ task buildJs(type: Exec) {
   commandLine('yarn', 'run', 'ng', 'build')
 }
 
+task buildJsWatch(type: Exec) {
+  commandLine('yarn', 'run', 'ng', 'build', '--watch')
+}
+
 task testJs(type: Exec) {
   commandLine('yarn', 'run', 'test', '--single-run')
 }
@@ -18,4 +22,5 @@ task cleanJs(type: Exec) {
 }
 
 buildJs.dependsOn(installJs)
+buildJs.dependsOn(testJs)
 testJs.dependsOn(installJs)
